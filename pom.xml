@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>fr.maboite</groupId>
-	<artifactId>secure-app-correction</artifactId>
+	<artifactId>secure-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>secure-app-correction</name>
+	<name>secure-app</name>
 	<description>Application sécurisée avec Spring Security</description>
 	<url/>
 	<licenses>
