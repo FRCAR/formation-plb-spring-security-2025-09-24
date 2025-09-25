@@ -3,10 +3,15 @@ package fr.maboite.correction.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,6 +21,8 @@ import org.springframework.security.crypto.password.DelegatingPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.StandardPasswordEncoder;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -38,7 +45,6 @@ public class SecurityConfigurationCorrection {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // Réutilisation de HttpSecurity fourni par SpringSecurity
         http
-
                 .authorizeHttpRequests(requests -> requests
                         // / et /home peuvent être requêtées par tout le monde
                         .requestMatchers("/", "/home", "/error", "/contact.html", "/logout-done").permitAll()
@@ -57,8 +63,41 @@ public class SecurityConfigurationCorrection {
                 // par tout le monde
                 .logout(logout -> logout.logoutUrl("/logout")
                         .logoutSuccessUrl("/logout-done")
-                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")).permitAll());
+                        .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")).permitAll())
+                //Ajout des capacités de rememberMe à l'application
+                //(se souvenir de moi)
+                .rememberMe(customizer -> customizer.key("motDePasseRememberMe")
+				.tokenValiditySeconds(259_200));
         return http.build();
+    }
+
+    // @Bean
+    // @Order(1)
+    SecurityFilterChain securityFilterChainBasic(HttpSecurity http) throws Exception {
+        return http.httpBasic(Customizer.withDefaults())
+                .csrf(c -> c.disable())
+                .securityMatcher("/rest/**")
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests(requests -> requests.anyRequest().authenticated())
+                .build();
+    }
+
+    @Bean
+    @Order(2)
+    SecurityFilterChain securityFilterChainJwt(HttpSecurity http, UserDetailsService uds) throws Exception {
+        return http.securityMatcher("/rest/**")
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .userDetailsService(uds)
+                .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))
+                .authorizeHttpRequests(r -> r.anyRequest().authenticated())
+                .build();
+    }
+
+    @Bean
+    JwtDecoder jwtDecoder() {
+        SecretKey key = new SecretKeySpec("MaChaineDeCaracteresQuiAUneLongueurDe256".getBytes(),
+                "HmacSHA256");
+        return NimbusJwtDecoder.withSecretKey(key).build();
     }
 
     /**
