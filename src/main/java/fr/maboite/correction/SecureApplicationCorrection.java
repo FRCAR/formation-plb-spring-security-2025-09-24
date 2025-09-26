@@ -21,5 +21,4 @@ public class SecureApplicationCorrection {
 		applicationContext.getBean(ServiceD.class).affichage();
 	}
 
-	
 }

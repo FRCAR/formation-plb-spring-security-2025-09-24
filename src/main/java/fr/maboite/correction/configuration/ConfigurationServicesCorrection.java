@@ -2,7 +2,6 @@ package fr.maboite.correction.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
 import fr.maboite.correction.service.ServiceA;
 import fr.maboite.correction.service.ServiceC;

@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
@@ -28,6 +29,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
+@EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfigurationCorrection {
 
     private static final int BCRYPT_STRENGTH = 10;
@@ -48,7 +50,7 @@ public class SecurityConfigurationCorrection {
                 .authorizeHttpRequests(requests -> requests
                         // / et /home peuvent être requêtées par tout le monde
                         .requestMatchers("/", "/home", "/error", "/contact.html", "/logout-done").permitAll()
-                        .requestMatchers("/salut.html").authenticated()
+                        .requestMatchers("/salut.html").hasRole("ADMIN")
                         // Toute autre requête ne peut être émise que par une personne
                         // authentifiée
                         .anyRequest().authenticated())
@@ -67,7 +69,7 @@ public class SecurityConfigurationCorrection {
                 //Ajout des capacités de rememberMe à l'application
                 //(se souvenir de moi)
                 .rememberMe(customizer -> customizer.key("motDePasseRememberMe")
-				.tokenValiditySeconds(259_200));
+				.tokenValiditySeconds(3_600));
         return http.build();
     }
 

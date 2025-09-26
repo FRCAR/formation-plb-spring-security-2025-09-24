@@ -9,15 +9,15 @@ import fr.maboite.secureapp.model.Booking;
 @Service
 public class BookingService {
 
-	@Autowired
-	private BookingDao bookingDao;
+    @Autowired
+    private BookingDao bookingDao;
 
-	public Iterable<Booking> findAll(){
-		return this.bookingDao.findAll();
-	}
-	
-	public Booking save(Booking booking) {
-		return this.bookingDao.save(booking);
-	}
+    public Iterable<Booking> findAll() {
+        return this.bookingDao.findAll();
+    }
+
+    public Booking save(Booking booking) {
+        return this.bookingDao.save(booking);
+    }
 
 }

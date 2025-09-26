@@ -21,71 +21,66 @@ import jakarta.persistence.Table;
 @Table(name = "MON_UTILISATEUR")
 public class MonUtilisateurCorrection implements UserDetails {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String login;
-	private String motDePasse;
+    /**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String login;
+    private String motDePasse;
 
-	// Le eager ici est discutable, mais ça va pour une formation
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "UTILISATEUR_ROLE", inverseJoinColumns = @JoinColumn(name = "ROLE_ID"), joinColumns = @JoinColumn(name = "UTILISATEUR_ID"))
-	private Set<MonRoleCorrection> roles = new HashSet<>();
+    // Le eager ici est discutable, mais ça va pour une formation
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "UTILISATEUR_ROLE", inverseJoinColumns = @JoinColumn(name = "ROLE_ID"), joinColumns = @JoinColumn(name = "UTILISATEUR_ID"))
+    private Set<MonRoleCorrection> roles = new HashSet<>();
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getMotDePasse() {
-		return motDePasse;
-	}
+    public String getMotDePasse() {
+        return motDePasse;
+    }
 
-	public void setMotDePasse(String motDePasse) {
-		this.motDePasse = motDePasse;
-	}
+    public void setMotDePasse(String motDePasse) {
+        this.motDePasse = motDePasse;
+    }
 
-	public Set<MonRoleCorrection> getRoles() {
-		return roles;
-	}
+    public Set<MonRoleCorrection> getRoles() {
+        return roles;
+    }
 
-	public void setRoles(Set<MonRoleCorrection> roles) {
-		this.roles = roles;
-	}
+    public void setRoles(Set<MonRoleCorrection> roles) {
+        this.roles = roles;
+    }
 
-	public String getLogin() {
-		return login;
-	}
+    public String getLogin() {
+        return login;
+    }
 
-	public void setLogin(String login) {
-		this.login = login;
-	}
+    public void setLogin(String login) {
+        this.login = login;
+    }
 
-	@Override
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		//return this.roles;
-		Set<MaPermissionCorrection> permissions = new HashSet<>();
-		for(MonRoleCorrection monRole : this.roles) {
-			permissions.addAll(monRole.getPermissions());
-		}
-		return permissions;
-	}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles;
+    }
 
-	@Override
-	public String getPassword() {
-		return this.motDePasse;
-	}
+    @Override
+    public String getPassword() {
+        return this.motDePasse;
+    }
 
-	@Override
-	public String getUsername() {
-		return this.login;
-	}
+    @Override
+    public String getUsername() {
+        return this.login;
+    }
 
 }

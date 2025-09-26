@@ -3,6 +3,8 @@ package fr.maboite.correction.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.security.core.GrantedAuthority;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,60 +17,60 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "MON_ROLE")
-public class MonRoleCorrection  {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String nom;
+public class MonRoleCorrection implements GrantedAuthority {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String nom;
 
-	@ManyToMany(mappedBy = "roles")
-	private Set<MonUtilisateurCorrection> monUtilisateur = new HashSet<>();
+    @ManyToMany(mappedBy = "roles")
+    private Set<MonUtilisateurCorrection> monUtilisateur = new HashSet<>();
 
-	// Le eager ici est aussi discutable, mais ça va pour une formation
-	@ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "ROLE_PERMISSION", inverseJoinColumns = @JoinColumn(name = "PERMISSION_ID"), joinColumns = @JoinColumn(name = "ROLE_ID"))
-	private Set<MaPermissionCorrection> permissions = new HashSet<>();
+    // Le eager ici est aussi discutable, mais ça va pour une formation
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "ROLE_PERMISSION", inverseJoinColumns = @JoinColumn(name = "PERMISSION_ID"), joinColumns = @JoinColumn(name = "ROLE_ID"))
+    private Set<MaPermissionCorrection> permissions = new HashSet<>();
 
-	public Long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(Long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getNom() {
-		return nom;
-	}
+    public String getNom() {
+        return nom;
+    }
 
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
+    public void setNom(String nom) {
+        this.nom = nom;
+    }
 
-	public Set<MonUtilisateurCorrection> getMonUtilisateur() {
-		return monUtilisateur;
-	}
+    public Set<MonUtilisateurCorrection> getMonUtilisateur() {
+        return monUtilisateur;
+    }
 
-	public void setMonUtilisateur(Set<MonUtilisateurCorrection> monUtilisateur) {
-		this.monUtilisateur = monUtilisateur;
-	}
+    public void setMonUtilisateur(Set<MonUtilisateurCorrection> monUtilisateur) {
+        this.monUtilisateur = monUtilisateur;
+    }
 
-	@Override
-	public String toString() {
-		return "MonRole [id=" + id + ", nom=" + nom + "]";
-	}
+    @Override
+    public String toString() {
+        return "MonRole [id=" + id + ", nom=" + nom + "]";
+    }
 
-//	@Override
-//	public String getAuthority() {
-//		return this.nom;
-//	}
+    @Override
+    public String getAuthority() {
+        return this.nom;
+    }
 
-	public Set<MaPermissionCorrection> getPermissions() {
-		return permissions;
-	}
+    public Set<MaPermissionCorrection> getPermissions() {
+        return permissions;
+    }
 
-	public void setPermissions(Set<MaPermissionCorrection> permissions) {
-		this.permissions = permissions;
-	}
+    public void setPermissions(Set<MaPermissionCorrection> permissions) {
+        this.permissions = permissions;
+    }
 
 }
