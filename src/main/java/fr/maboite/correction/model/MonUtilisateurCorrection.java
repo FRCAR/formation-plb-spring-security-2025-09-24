@@ -19,7 +19,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "MON_UTILISATEUR")
-public class MonUtilisateurCorrection implements UserDetails {
+public class MonUtilisateurCorrection implements UserDetails{
 
     /**
      * 

@@ -9,6 +9,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -66,10 +67,10 @@ public class SecurityConfigurationCorrection {
                 .logout(logout -> logout.logoutUrl("/logout")
                         .logoutSuccessUrl("/logout-done")
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET")).permitAll())
-                //Ajout des capacités de rememberMe à l'application
-                //(se souvenir de moi)
+                // Ajout des capacités de rememberMe à l'application
+                // (se souvenir de moi)
                 .rememberMe(customizer -> customizer.key("motDePasseRememberMe")
-				.tokenValiditySeconds(3_600));
+                        .tokenValiditySeconds(3_600));
         return http.build();
     }
 
@@ -86,12 +87,15 @@ public class SecurityConfigurationCorrection {
 
     @Bean
     @Order(2)
-    SecurityFilterChain securityFilterChainJwt(HttpSecurity http, UserDetailsService uds) throws Exception {
+    SecurityFilterChain securityFilterChainJwt(HttpSecurity http) throws Exception {
         return http.securityMatcher("/rest/**")
+                .csrf(c -> c.disable())
                 .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .userDetailsService(uds)
                 .oauth2ResourceServer(o -> o.jwt(Customizer.withDefaults()))
-                .authorizeHttpRequests(r -> r.anyRequest().authenticated())
+                .authorizeHttpRequests(
+                        r -> r.requestMatchers(HttpMethod.GET, "/rest/bookings").hasAuthority("SCOPE_READ_BOOKING")
+                                .requestMatchers(HttpMethod.POST, "/rest/bookings").hasAuthority("SCOPE_CREATE_BOOKING")
+                                .anyRequest().denyAll())
                 .build();
     }
 
